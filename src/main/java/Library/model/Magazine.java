@@ -4,22 +4,23 @@ import java.util.Objects;
 
 public class Magazine extends Publication {
 
-    private int month;
+    public static final String TYPE = "Magazyn";
+    private String month;
     private int day;
     private String language;
 
-    public Magazine(String tytul, int dataWydania, String wydawca, int month, int day, String language) {
+    public Magazine(String tytul, int dataWydania, String wydawca, String month, int day, String language) {
         super(tytul, dataWydania, wydawca);
         this.month = month;
         this.day = day;
         this.language = language;
     }
 
-    public int getMonth() {
+    public String getMonth() {
         return month;
     }
 
-    public void setMonth(int month) {
+    public void setMonth(String month) {
         this.month = month;
     }
 
@@ -37,6 +38,17 @@ public class Magazine extends Publication {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    @Override
+    public String toCsv() {
+        return TYPE + "; " +
+                getTytul() + "; " +
+                getDataWydania() + "; " +
+                getWydawca() + "; " +
+                day + "; " +
+                month + "; " +
+                language;
     }
 
     @Override

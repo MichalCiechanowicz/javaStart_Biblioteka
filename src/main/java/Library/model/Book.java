@@ -4,11 +4,12 @@ import java.util.Objects;
 
 public class Book extends Publication {
 
+    public static final String TYPE = "Ksiazka";
     private String autor;
     private int iloscStron;
     private String isbn;
 
-    public Book(String tytul, String autor, int iloscStron, int dataWydania, String wydawca, String isbn) {
+    public Book(String tytul, String autor, String wydawca, int dataWydania, int iloscStron, String isbn) {
         super(tytul, dataWydania, wydawca);
         this.autor = autor;
         this.iloscStron = iloscStron;
@@ -40,12 +41,25 @@ public class Book extends Publication {
     }
 
     @Override
+    public String toCsv() {
+        return TYPE +"; "+
+                getTytul() + "; " +
+                autor + "; " +
+                getWydawca() + "; " +
+                getDataWydania()+"; " +
+                iloscStron+"; " +
+                isbn;
+    }
+
+    @Override
     public String toString() {
-        return "Book{" + super.toString() +
-                ", autor='" + autor + '\'' +
-                ", iloscStron=" + iloscStron +
-                ", isbn='" + isbn + '\'' +
-                '}';
+        return "Ksiazka - " +
+                "Tytul: " + getTytul() +
+                ", Autor: " + autor +
+                ", Wydawca: " + getWydawca() +
+                ", Data Wydania: " + getDataWydania() +
+                ", ilosc Stron: " + iloscStron +
+                ", isbn: " + isbn;
     }
 
     @Override

@@ -20,8 +20,8 @@ public class FileManagerBuilder {
         switch (fileType) {
             case SERIAL:
                 return new SerializableFileManager();
-//            case CSV:
-//                return new SerializableFileManager();
+            case CSV:
+                return new CsvFileManager();
             default:
                 throw new NoSuchFileTypeExeption("Nie ma takiego rozszrzenia");
         }

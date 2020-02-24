@@ -14,7 +14,7 @@ public class SerializableFileManager implements FileManager {
     public Library importData() {
 
         try (
-                var fis = new FileInputStream(FILE_NAME);
+                FileInputStream fis = new FileInputStream(FILE_NAME);
                 ObjectInputStream ois = new ObjectInputStream(fis);
 
         ) {

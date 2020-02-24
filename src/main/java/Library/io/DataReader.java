@@ -1,6 +1,7 @@
 package Library.io;
 
 import Library.model.Book;
+import Library.model.LibraryUser;
 import Library.model.Magazine;
 
 import java.util.Scanner;
@@ -19,17 +20,17 @@ public class DataReader {
         String tytul = scanner.nextLine();
         printer.printLine("Podaj Autora");
         String autor = scanner.nextLine();
+        printer.printLine("Podaj Wydawce");
+        String wydawca = scanner.nextLine();
         printer.printLine("Podaj Date Wydania");
         int dataWydania = scanner.nextInt();
         scanner.nextLine();
         printer.printLine("Podaj Ilos Stron");
         int iloscStron = scanner.nextInt();
         scanner.nextLine();
-        printer.printLine("Podaj Wydawce");
-        String wydawca = scanner.nextLine();
         printer.printLine("Podaj ISBN");
         String isbn = scanner.nextLine();
-        return new Book(tytul, autor, dataWydania, iloscStron, wydawca, isbn);
+        return new Book(tytul, autor,  wydawca,dataWydania, iloscStron, isbn);
 
     }
 
@@ -42,8 +43,7 @@ public class DataReader {
         printer.printLine("Podaj Wydawce");
         String wydawca = scanner.nextLine();
         printer.printLine("Podaj miesiac");
-        int month = scanner.nextInt();
-        scanner.nextLine();
+        String  month = scanner.nextLine();
         printer.printLine("Podaj dzien");
         int day = scanner.nextInt();
         scanner.nextLine();
@@ -52,6 +52,17 @@ public class DataReader {
 
         return new Magazine(tytul, dataWydania, wydawca, month, day, language);
 
+    }
+
+    public LibraryUser readAndCreateLibraryUser(){
+        printer.printLine("Podaj Imie");
+        String name = scanner.nextLine();
+        printer.printLine("Podaj nazwisko");
+        String surname = scanner.nextLine();
+        printer.printLine("Podaj Pesel");
+        String pesel = scanner.nextLine();
+
+        return  new LibraryUser(name,surname,pesel);
     }
 
     public int getInt() {

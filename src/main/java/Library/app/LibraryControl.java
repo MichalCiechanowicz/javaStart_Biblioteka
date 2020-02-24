@@ -2,12 +2,18 @@ package Library.app;
 
 import Library.exeption.DataExportExeption;
 import Library.exeption.DataImportExeption;
+import Library.exeption.UserAlreadyExistExeption;
 import Library.io.ConsolPrinter;
 import Library.io.DataReader;
 import Library.io.file.FileManager;
 import Library.io.file.FileManagerBuilder;
+import Library.model.Book;
 import Library.model.Library;
+import Library.model.LibraryUser;
+import Library.model.Magazine;
+import Library.model.comparator.AlphabeticTitleComparator;
 
+import java.util.Comparator;
 import java.util.InputMismatchException;
 
 public class LibraryControl {
@@ -19,9 +25,9 @@ public class LibraryControl {
 
     LibraryControl() {
         fileManager = new FileManagerBuilder(printer, dataReader).build();
-        printer.printLine("Dane z pliku wczytane prawidlowo");
         try {
             library = fileManager.importData();
+            printer.printLine("Dane z pliku wczytane prawidlowo");
         } catch (DataImportExeption e) {
             printer.printLine(e.getMessage());
             printer.printLine("Zainicjonowano nowa baze");
@@ -32,10 +38,8 @@ public class LibraryControl {
 
     void controlLoop() {
         Option option;
-
         do {
             printOutOption();
-
             option = getOption();
             switch (option) {
                 case EXIT:
@@ -48,15 +52,47 @@ public class LibraryControl {
                     addMagazine();
                     break;
                 case PRINT_BOOKS:
-                    printer.printBooks(library.getPublications());
+                    printBooks();
                     break;
                 case PRINT_MAGAZINES:
-                    printer.printMagazine(library.getPublications());
+                    printMagazines();
+                    break;
+                case DELETE_BOOK:
+                    deleteBook();
+                    break;
+                case DELETE_MAGAZINE:
+                    deleteMagazie();
+                    break;
+                case ADD_USER:
+                    addLibraryUser();
+                    break;
+                case PRINT_USERS:
+                    printUsers();
                     break;
                 default:
                     printer.printLine("Podales zla wartosc");
             }
         } while (option != Option.EXIT);
+    }
+
+    private void printUsers() {
+        printer.printUsers(library.getSortedUsers(new Comparator<LibraryUser>() {
+            @Override
+            public int compare(LibraryUser p1, LibraryUser p2) {
+                return p1.getSurName().compareToIgnoreCase(p2.getSurName());
+            }
+        }));
+
+    }
+
+    private void addLibraryUser() {
+        LibraryUser libraryUser = dataReader.readAndCreateLibraryUser();
+        try {
+            library.addUser(libraryUser);
+        } catch (UserAlreadyExistExeption e) {
+            printer.printLine(e.getMessage());
+        }
+
     }
 
     private Option getOption() {
@@ -75,19 +111,22 @@ public class LibraryControl {
         return option;
     }
 
-//    private void printMagazines() {
-//        Publication[] publications = library.getPublications();
-//        printer.printMagazine(publications);
-//    }
-//
-//    private void printBooks() {
-//        Publication[] publications = library.getPublications();
-//        printer.printBooks(publications);
-//    }
+
+    private void printMagazines() {
+        printer.printMagazine(library.getSortedPublication(new AlphabeticTitleComparator()));
+    }
+
+    private void printBooks() {
+        printer.printBooks(library.getSortedPublication(new AlphabeticTitleComparator()));
+
+    }
 
     private void addMagazine() {
+//mozna to zrobic tez tak jak w metodzie addBook, czyli nie tworzyc referencji magazine,
+// tylko odrazu do metody addPublication przekazac dataReader.readAndCreateMagazine jako parametr.
         try {
-            library.addMagazine(dataReader.readAndCreateMagazine());
+            Magazine magazine = dataReader.readAndCreateMagazine();
+            library.addPublication(magazine);
         } catch (
                 InputMismatchException e) {
             printer.printLine("Podales zwla wartosc, powinna byc liczbowa");
@@ -98,15 +137,47 @@ public class LibraryControl {
 
     }
 
+    private void deleteMagazie() {
+        try {
+            Magazine magazine = dataReader.readAndCreateMagazine();
+            if (library.removePublication(magazine)) {
+                printer.printLine("Magazyn zostal usuniety");
+            } else {
+                printer.printLine("Nie ma takiego magazynu");
+            }
+        } catch (InputMismatchException e) {
+            printer.printLine("Podales nieprawidlowe dane");
+        }
+    }
+
     private void addBook() {
         try {
-            library.addBook(dataReader.readAndCreateBook());
+            library.addPublication(dataReader.readAndCreateBook());
         } catch (InputMismatchException e) {
             printer.printLine("Podales zwla wartosc, powinna byc liczbowa");
         } catch (ArrayIndexOutOfBoundsException e) {
             printer.printLine("Bilioteka jest juz pelna");
         }
     }
+
+    private void deleteBook() {
+        try {
+            Book book = dataReader.readAndCreateBook();
+            if (library.removePublication(book)) {
+                printer.printLine("Ksiazka zostala usunieta");
+            } else {
+                printer.printLine("Nie ma takiej ksiazki");
+            }
+        } catch (InputMismatchException e) {
+            printer.printLine("Podales nieprawidlowe dane");
+        }
+    }
+
+//    private Publication[] getSortedPublication() {
+//        Publication[] publications = library.getPublications();
+//        Arrays.sort(publications, new AlphabeticComparator());
+//        return publications;
+//    }
 
     private void exit() {
         try {
@@ -127,13 +198,17 @@ public class LibraryControl {
         }
     }
 
-    public enum Option {
+    private enum Option {
 
-        EXIT(0, " wyjscie"),
-        ADD_BOOK(1, " dodaj ksiazke"),
-        ADD_MAGAZINE(2, " dodaj magazyn"),
-        PRINT_BOOKS(3, " wyswietl ksiazki"),
-        PRINT_MAGAZINES(4, " wyswietl magazyny");
+        EXIT(0, " Wyjscie"),
+        ADD_BOOK(1, " Dodaj ksiazke"),
+        ADD_MAGAZINE(2, " Dodaj magazyn"),
+        PRINT_BOOKS(3, " Wyswietl ksiazki"),
+        PRINT_MAGAZINES(4, " Wyswietl magazyny"),
+        DELETE_BOOK(5, " Usun Ksiazke"),
+        DELETE_MAGAZINE(6, " Usun Magazyn"),
+        ADD_USER(7, " Dodaj Czytelnika"),
+        PRINT_USERS(8, " Wyswietl Czytelnikow");
 
         private final int value;
         private final String description;

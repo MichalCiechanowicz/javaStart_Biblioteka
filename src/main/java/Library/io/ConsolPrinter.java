@@ -1,11 +1,15 @@
 package Library.io;
 
 import Library.model.Book;
+import Library.model.LibraryUser;
+import Library.model.Magazine;
 import Library.model.Publication;
+
+import java.util.Collection;
 
 public class ConsolPrinter {
 
-    public void printBooks(Publication[] publications) {
+    public void printBooks(Collection<Publication> publications) {
         for (Publication publication : publications) {
             if (publication instanceof Book) {
                 printLine(publication.toString());
@@ -13,15 +17,21 @@ public class ConsolPrinter {
         }
     }
 
-    public void printMagazine(Publication[] publications) {
+    public void printMagazine(Collection<Publication> publications) {
         for (Publication publication : publications) {
-            if (publication instanceof Book) {
+            if (publication instanceof Magazine) {
                 printLine(publication.toString());
             }
+        }
+    }
+
+    public void printUsers(Collection<LibraryUser> users) {
+        for (LibraryUser user : users) {
+            printLine(user.toString());
         }
     }
 
     public void printLine(String text) {
-        System.out.println(text.toUpperCase());
+        System.out.println(text);
     }
 }
