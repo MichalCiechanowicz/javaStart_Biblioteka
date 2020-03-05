@@ -7,7 +7,6 @@ import Library.model.*;
 
 import java.io.*;
 import java.util.Collection;
-import java.util.Scanner;
 
 public class CsvFileManager implements FileManager {
 
@@ -23,26 +22,28 @@ public class CsvFileManager implements FileManager {
     }
 
     private void importLibraryUser(Library library) {
-        try (Scanner fileReader = new Scanner(new File(USER_FILE))) {
-            while (fileReader.hasNextLine()) {
-                String line = fileReader.nextLine();
-                LibraryUser libraryUser = createUserFromString(line);
-                library.addUser(libraryUser);
-            }
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(USER_FILE))) {
+            bufferedReader.lines()
+                    .map(this::createUserFromString)
+                    .forEach(library::addUser);
         } catch (FileNotFoundException e) {
             throw new DataImportExeption("Brak pliku " + USER_FILE);
+        } catch (IOException e) {
+            throw new DataImportExeption("Blad odczytu pliku " + USER_FILE);
         }
     }
 
     private void importPublication(Library library) {
-        try (Scanner fileReader = new Scanner(new File(FILE_NAME))) {
-            while (fileReader.hasNextLine()) {
-                String line = fileReader.nextLine();
-                Publication publication = createObjectFromString(line);
-                library.addPublication(publication);
-            }
-        } catch (FileNotFoundException e) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(FILE_NAME))) {
+            bufferedReader.lines()
+                    .map(this::createObjectFromString)
+                    .forEach(library::addPublication);
+        } catch (
+                FileNotFoundException e) {
             throw new DataImportExeption("Brak pliku " + FILE_NAME);
+        } catch (
+                IOException e) {
+            throw new DataImportExeption("Blad odczytu pliku " + FILE_NAME);
         }
     }
 
@@ -77,7 +78,7 @@ public class CsvFileManager implements FileManager {
         int dataWydania = Integer.parseInt(data[2]);
         String wydawca = data[3];
         int day = Integer.parseInt(data[4]);
-        String month = data[5];
+        int month = Integer.parseInt(data[5]);
         String languange = data[6];
 
         return new Magazine(title, dataWydania, wydawca, month, day, languange);

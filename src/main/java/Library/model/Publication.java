@@ -1,17 +1,18 @@
 package Library.model;
 
 import java.io.Serializable;
+import java.time.Year;
 import java.util.Objects;
 
 public abstract class Publication implements Serializable, Comparable<Publication>, CsvConvertible {
 
     private String tytul;
-    private int dataWydania;
+    private Year dataWydania;
     private String wydawca;
 
     public Publication(String tytul, int dataWydania, String wydawca) {
         this.tytul = tytul;
-        this.dataWydania = dataWydania;
+        this.dataWydania = Year.of(dataWydania);
         this.wydawca = wydawca;
     }
 
@@ -23,11 +24,11 @@ public abstract class Publication implements Serializable, Comparable<Publicatio
         this.tytul = tytul;
     }
 
-    public int getDataWydania() {
+    public Year getDataWydania() {
         return dataWydania;
     }
 
-    public void setDataWydania(int dataWydania) {
+    public void setDataWydania(Year dataWydania) {
         this.dataWydania = dataWydania;
     }
 
@@ -39,10 +40,10 @@ public abstract class Publication implements Serializable, Comparable<Publicatio
         this.wydawca = wydawca;
     }
 
-
     @Override
     public String toString() {
-        return "tytul='" + tytul + '\'' +
+        return "Publication{" +
+                "tytul='" + tytul + '\'' +
                 ", dataWydania=" + dataWydania +
                 ", wydawca='" + wydawca + '\'' +
                 '}';
@@ -53,8 +54,8 @@ public abstract class Publication implements Serializable, Comparable<Publicatio
         if (this == o) return true;
         if (!(o instanceof Publication)) return false;
         Publication that = (Publication) o;
-        return dataWydania == that.dataWydania &&
-                Objects.equals(tytul, that.tytul) &&
+        return Objects.equals(tytul, that.tytul) &&
+                Objects.equals(dataWydania, that.dataWydania) &&
                 Objects.equals(wydawca, that.wydawca);
     }
 

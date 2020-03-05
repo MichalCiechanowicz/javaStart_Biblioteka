@@ -43,7 +43,8 @@ public class DataReader {
         printer.printLine("Podaj Wydawce");
         String wydawca = scanner.nextLine();
         printer.printLine("Podaj miesiac");
-        String  month = scanner.nextLine();
+        int month = scanner.nextInt();
+        scanner.nextLine();
         printer.printLine("Podaj dzien");
         int day = scanner.nextInt();
         scanner.nextLine();

@@ -7,10 +7,7 @@ import Library.io.ConsolPrinter;
 import Library.io.DataReader;
 import Library.io.file.FileManager;
 import Library.io.file.FileManagerBuilder;
-import Library.model.Book;
-import Library.model.Library;
-import Library.model.LibraryUser;
-import Library.model.Magazine;
+import Library.model.*;
 import Library.model.comparator.AlphabeticTitleComparator;
 
 import java.util.Comparator;
@@ -69,19 +66,28 @@ public class LibraryControl {
                 case PRINT_USERS:
                     printUsers();
                     break;
+                case FIND_BOOK:
+                    findBookByTitle();
+                    break;
                 default:
                     printer.printLine("Podales zla wartosc");
             }
         } while (option != Option.EXIT);
     }
 
+    private void findBookByTitle() {
+        printer.printLine("Podaj tytul publikacji");
+        String title = dataReader.getString();
+        String titleNotFound = "Brak Publikacji o danym tytule";
+        library.getPublicationByTitle(title)
+                .ifPresentOrElse(System.out::println,()-> System.out.println(titleNotFound));
+    }
+
     private void printUsers() {
-        printer.printUsers(library.getSortedUsers(new Comparator<LibraryUser>() {
-            @Override
-            public int compare(LibraryUser p1, LibraryUser p2) {
-                return p1.getSurName().compareToIgnoreCase(p2.getSurName());
-            }
-        }));
+        printer.printUsers(library.getSortedUsers(
+//                (p1, p2) -> p1.getSurName().compareToIgnoreCase(p2.getSurName()
+                Comparator.comparing(User::getSurName,String.CASE_INSENSITIVE_ORDER)
+                ));
 
     }
 
@@ -111,11 +117,14 @@ public class LibraryControl {
         return option;
     }
 
-
+//uzywamy tutaj wyrazen lambda do sortowania
     private void printMagazines() {
-        printer.printMagazine(library.getSortedPublication(new AlphabeticTitleComparator()));
+        printer.printMagazine(library.getSortedPublication(
+//                (p1,p2)-> p1.getTytul().compareToIgnoreCase(p2.getTytul()
+//                wwyrazenie lambda mozna zastapic tym
+                Comparator.comparing(Publication::getTytul,String.CASE_INSENSITIVE_ORDER)));
     }
-
+//uzywamy tutaj stworzonej przez nas klasy komparatora zamiast wyrazenia lambda. Wyrazenie lambda
     private void printBooks() {
         printer.printBooks(library.getSortedPublication(new AlphabeticTitleComparator()));
 
@@ -208,7 +217,8 @@ public class LibraryControl {
         DELETE_BOOK(5, " Usun Ksiazke"),
         DELETE_MAGAZINE(6, " Usun Magazyn"),
         ADD_USER(7, " Dodaj Czytelnika"),
-        PRINT_USERS(8, " Wyswietl Czytelnikow");
+        PRINT_USERS(8, " Wyswietl Czytelnikow"),
+        FIND_BOOK(9,"Wyszukaj ksiazke po tytule");
 
         private final int value;
         private final String description;
